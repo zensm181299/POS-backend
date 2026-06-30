@@ -1,28 +1,25 @@
 'use strict';
-const {
-  Model
-} = require('sequelize');
+const { Model } = require('sequelize');
 module.exports = (sequelize, DataTypes) => {
   class ExpenseTransaction extends Model {
-    /**
-     * Helper method for defining associations.
-     * This method is not a part of Sequelize lifecycle.
-     * The `models/index` file will call this method automatically.
-     */
     static associate(models) {
-      // define association here
+      ExpenseTransaction.belongsTo(models.Wallet, { foreignKey: 'wallet_id', as: 'wallet' });
+      ExpenseTransaction.hasMany(models.ExpenseTransactionDetail, { foreignKey: 'expense_transaction_id', as: 'details' });
     }
   }
   ExpenseTransaction.init({
-    expense_number: DataTypes.STRING,
-    type: DataTypes.STRING,
-    total_expens: DataTypes.INTEGER,
-    wallet_id: DataTypes.STRING,
-    expense_date: DataTypes.DATE,
-    notes: DataTypes.STRING
+    id: { type: DataTypes.UUID, defaultValue: DataTypes.UUIDV4, primaryKey: true },
+    expense_number: { type: DataTypes.STRING, allowNull: false, unique: true },
+    type: { type: DataTypes.ENUM('OPERATIONAL', 'RESTOCK'), allowNull: false },
+    total_expense: { type: DataTypes.INTEGER, allowNull: false },
+    wallet_id: { type: DataTypes.UUID, allowNull: false },
+    notes: DataTypes.STRING,
+    expense_date: { type: DataTypes.DATE, allowNull: false }
   }, {
     sequelize,
     modelName: 'ExpenseTransaction',
+    tableName: 'expense_transactions',
+    underscored: true
   });
   return ExpenseTransaction;
 };

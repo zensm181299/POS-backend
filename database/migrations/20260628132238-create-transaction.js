@@ -37,12 +37,6 @@ module.exports = {
       wallet_id: {
         type: Sequelize.UUID,
         allowNull: true, // Opsional: boleh null jika kasir tidak memilih dompet tertentu
-        references: {
-          model: 'wallets', // Nama tabel tujuan di database
-          key: 'id'
-        },
-        onUpdate: 'CASCADE',
-        onDelete: 'SET NULL'
       },
       created_at: { // Ubah dari createdAt ke created_at
         allowNull: false,

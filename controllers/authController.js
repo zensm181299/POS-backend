@@ -8,7 +8,7 @@ const authController = {
     // 1. Registrasi User Baru (Hanya bisa diakses Admin jika diperlukan)
     register: async (req, res) => {
         try {
-            const { name, username, password, role } = req.body;
+            const { name, username, password, role="admin" } = req.body;
             
             const userExists = await User.findOne({ where: { username } });
             if (userExists) return res.error('Username sudah digunakan', 400);

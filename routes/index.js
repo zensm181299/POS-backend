@@ -6,6 +6,7 @@ const productRoutes = require('./productRoutes');
 const transactionRoutes = require('./transactionRoutes');
 const dashboardRoutes = require('./dashboardRoutes');
 const walletRoutes = require('./walletRoutes');
+const expenseRoutes = require('./expenseRoutes');
 
 const { verifyToken } = require('../middleware/authMiddleware');
 
@@ -16,5 +17,6 @@ router.use('/categories', verifyToken, categoryRoutes);
 router.use('/products', verifyToken, productRoutes);
 router.use('/dashboard', verifyToken, dashboardRoutes);
 router.use('/wallet', verifyToken, walletRoutes);
+router.use('/expense', verifyToken, expenseRoutes);
 
 module.exports = router;

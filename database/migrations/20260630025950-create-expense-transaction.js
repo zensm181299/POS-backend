@@ -2,7 +2,7 @@
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface, Sequelize) {
-    await queryInterface.createTable('ExpenseTransactions', {
+    await queryInterface.createTable('expense_transactions', {
       id: {
         allowNull: false,
         primaryKey: true,
@@ -21,9 +21,6 @@ module.exports = {
       wallet_id: {
         type: Sequelize.UUID,
         allowNull: false,
-        references: { model: 'wallets', key: 'id' },
-        onUpdate: 'CASCADE',
-        onDelete: 'RESTRICT'
       },
       expense_date: {
         type: Sequelize.DATE
@@ -42,6 +39,6 @@ module.exports = {
     });
   },
   async down(queryInterface, Sequelize) {
-    await queryInterface.dropTable('ExpenseTransactions');
+    await queryInterface.dropTable('expense_transactions');
   }
 };
