@@ -3,34 +3,36 @@ const {
   Model
 } = require('sequelize');
 module.exports = (sequelize, DataTypes) => {
-  class Category extends Model {
+  class BalanceTransactionHistory extends Model {
     /**
      * Helper method for defining associations.
      * This method is not a part of Sequelize lifecycle.
      * The `models/index` file will call this method automatically.
      */
     static associate(models) {
-      Category.hasMany(models.Product, { 
-          foreignKey: 'category_id', // Nama kolom foreign key di tabel Product
-          as: 'products'            // Nama alias (bebas, nanti dipanggil di query)
-      });
+      // define association here
+      BalanceTransactionHistory.belongsTo(models.Wallet,{
+        foreignKey: 'wallet_id',
+        as: 'wallet'
+      })
     }
   }
-
-  Category.init({
+  BalanceTransactionHistory.init({
     id: {
       type: DataTypes.UUID,         // Sinkronkan ke UUID
       defaultValue: DataTypes.UUIDV4, // Sinkronkan generatornya
       primaryKey: true
     },
-    name: DataTypes.STRING,
-    status: DataTypes.STRING,
-    description: DataTypes.STRING
+    wallet_id: DataTypes.UUID,
+    type: DataTypes.STRING,
+    amount: DataTypes.INTEGER,
+    date: DataTypes.DATE,
+    notes: DataTypes.STRING
   }, {
     sequelize,
-    modelName: 'Category',
-    tableName: 'categories',
+    modelName: 'BalanceTransactionHistory',
+    tableName: 'balance_transaction_history',
     underscored: true
   });
-  return Category;
+  return BalanceTransactionHistory;
 };

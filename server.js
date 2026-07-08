@@ -25,12 +25,21 @@ const apiLimiter = rateLimit({
         message: 'Terlalu banyak request dari IP Anda, silakan coba lagi nanti.' 
     }
 });
-app.use('/api', apiLimiter);
+app.use('/api', (req, res, next) => {
+    if (req.method === 'OPTIONS') {
+        return next();
+    }
+    apiLimiter(req, res, next);
+});
 
 // ==========================================
 // 2. LAYER BASE MIDDLEWARE & CUSTOM RESPONSE
 // ==========================================
-app.use(cors());
+app.use(cors({
+    origin: 'http://localhost:5173', // Izinkan port frontend kamu
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    credentials: true // Jika kamu butuh kirim cookie/session
+}));
 app.use(responseMiddleware); // Custom helper res.success / res.error Anda
 app.use(express.json());
 

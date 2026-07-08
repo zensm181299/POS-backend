@@ -15,7 +15,7 @@ module.exports = {
       type: {
         type: Sequelize.STRING
       },
-      total_expens: {
+      total_expense: {
         type: Sequelize.INTEGER
       },
       wallet_id: {
@@ -28,11 +28,11 @@ module.exports = {
       notes: {
         type: Sequelize.STRING
       },
-      createdAt: {
+      created_at: {
         allowNull: false,
         type: Sequelize.DATE
       },
-      updatedAt: {
+      updated_at: {
         allowNull: false,
         type: Sequelize.DATE
       }

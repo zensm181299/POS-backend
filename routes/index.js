@@ -16,7 +16,7 @@ router.use('/sales-order', verifyToken, transactionRoutes);
 router.use('/categories', verifyToken, categoryRoutes);
 router.use('/products', verifyToken, productRoutes);
 router.use('/dashboard', verifyToken, dashboardRoutes);
-router.use('/wallet', verifyToken, walletRoutes);
-router.use('/expense', verifyToken, expenseRoutes);
+router.use('/wallets', verifyToken, walletRoutes);
+router.use('/expenses', verifyToken, expenseRoutes);
 
 module.exports = router;

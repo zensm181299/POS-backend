@@ -1,5 +1,5 @@
-const { Wallet } = require('../models');
-const { Op } = require('sequelize');
+const { Wallet, BalanceTransactionHistory, sequelize } = require('../models');
+const { Op, where } = require('sequelize');
 
 const walletQueries = {
     findAll: async (page = 1, limit = 10, search = "") => {
@@ -17,7 +17,7 @@ const walletQueries = {
         return await Wallet.findAndCountAll({
             limit: limitNum,
             offset: offset,
-            order: [['createdAt', 'DESC']],
+            order: [['created_at', 'DESC']],
             where
         });
     },
@@ -40,6 +40,37 @@ const walletQueries = {
         return await Wallet.destroy({
             where: { id }
         });
+    },
+
+    createHistoryTransaction: async (data) => {
+        const t = await sequelize.transaction();
+        try {
+            if (data.wallet_id) {
+                const wallet = await Wallet.findByPk(data.wallet_id, { transaction: t });
+                if (!wallet) {
+                    throw new Error('Wallet/Dompet Kas yang dipilih tidak valid atau tidak ditemukan.');
+                }
+
+                // Tambahkan saldo wallet dengan total omset (pemasukan kotor) dari transaksi ini
+                wallet.balance += parseInt(data.amount);
+                await wallet.save({ transaction: t });
+            }
+
+            const newData = await BalanceTransactionHistory.create(data);
+
+            await t.commit();
+            return newData;
+        } catch (error) {
+            await t.rollback();
+            throw error;
+        }
+    },
+
+    findAllByWalletId: async (walletId) => {
+        return await BalanceTransactionHistory.findAll(
+            {
+                where: {wallet_id: walletId},
+            });
     }
 };
 

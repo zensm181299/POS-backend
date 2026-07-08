@@ -1,41 +1,26 @@
 'use strict';
-/** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface, Sequelize) {
     await queryInterface.createTable('expense_transaction_details', {
       id: {
         allowNull: false,
-        autoIncrement: true,
         primaryKey: true,
-        type: Sequelize.INTEGER
+        type: Sequelize.UUID,
+        defaultValue: Sequelize.UUIDV4 // 🔍 Menjamin UUID terbentuk di level database jika didukung
       },
       expense_transaction_id: {
-        type: Sequelize.UUID
+        type: Sequelize.UUID, // 🔍 Wajib UUID murni
+        allowNull: false,
       },
       product_id: {
-        type: Sequelize.UUID,
+        type: Sequelize.UUID, // 🔍 Wajib UUID murni
         allowNull: false,
-        references: { model: 'products', key: 'id' },
-        onUpdate: 'CASCADE',
-        onDelete: 'RESTRICT'
       },
-      quantity: {
-        type: Sequelize.INTEGER
-      },
-      cost_price_per_item: {
-        type: Sequelize.INTEGER
-      },
-      sub_total: {
-        type: Sequelize.INTEGER
-      },
-      createdAt: {
-        allowNull: false,
-        type: Sequelize.DATE
-      },
-      updatedAt: {
-        allowNull: false,
-        type: Sequelize.DATE
-      }
+      quantity: { type: Sequelize.INTEGER, allowNull: false },
+      cost_price_per_item: { type: Sequelize.INTEGER, allowNull: false },
+      sub_total: { type: Sequelize.INTEGER, allowNull: false },
+      created_at: { allowNull: false, type: Sequelize.DATE },
+      updated_at: { allowNull: false, type: Sequelize.DATE }
     });
   },
   async down(queryInterface, Sequelize) {

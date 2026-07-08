@@ -8,9 +8,13 @@ module.exports = (sequelize, DataTypes) => {
     }
   }
   ExpenseTransaction.init({
-    id: { type: DataTypes.UUID, defaultValue: DataTypes.UUIDV4, primaryKey: true },
+    id: {
+      type: DataTypes.UUID,         // Sinkronkan ke UUID
+      defaultValue: DataTypes.UUIDV4, // Sinkronkan generatornya
+      primaryKey: true
+    },
     expense_number: { type: DataTypes.STRING, allowNull: false, unique: true },
-    type: { type: DataTypes.ENUM('OPERATIONAL', 'RESTOCK'), allowNull: false },
+    type: { type: DataTypes.ENUM('OPERATIONAL', 'RESTOCK','BILL','OTHER'), allowNull: false },
     total_expense: { type: DataTypes.INTEGER, allowNull: false },
     wallet_id: { type: DataTypes.UUID, allowNull: false },
     notes: DataTypes.STRING,

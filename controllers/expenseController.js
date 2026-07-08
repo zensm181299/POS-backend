@@ -13,12 +13,10 @@ const expenseController = {
                 where.expense_number = { [Op.like]: `%${search}%` };
             }
 
-            // Filter tipe (OPERATIONAL / RESTOCK)
             if (type && ['OPERATIONAL', 'RESTOCK'].includes(type)) {
                 where.type = type;
             }
 
-            // Filter rentang tanggal pengeluaran (Between)
             if (expense_date) {
                 let dates = expense_date.split(",");
                 let start_date = new Date(dates[0]);
@@ -58,20 +56,19 @@ const expenseController = {
             return res.error(error.message, 500);
         }
     },
-    
+
+    // controllers/expenseController.js
+
     createExpenseTransaction: async (req, res) => {
         try {
             const { type, wallet_id, notes, expense_date, items, manual_total_expense } = req.body;
 
             if (!wallet_id) return res.error('Wallet ID wajib dipilih', 400);
-            if (!type || !['OPERATIONAL', 'RESTOCK'].includes(type)) {
-                return res.error('Tipe pengeluaran harus OPERATIONAL atau RESTOCK', 400);
-            }
+            if (!type) return res.error('Tipe pengeluaran wajib diisi', 400);
 
             let total_expense = 0;
             let processedItems = [];
 
-            // Jika tipenya restock produk, hitung total otomatis dari item keranjang belanja restock
             if (type === 'RESTOCK') {
                 if (!items || items.length === 0) {
                     return res.error('Item produk restock tidak boleh kosong', 400);
@@ -89,14 +86,15 @@ const expenseController = {
                     });
                 });
             } else {
-                // Jika operasional biasa, ambil nominal langsung dari input formulir
                 if (!manual_total_expense || manual_total_expense <= 0) {
                     return res.error('Total pengeluaran operasional harus lebih dari 0', 400);
                 }
                 total_expense = parseInt(manual_total_expense);
             }
 
-            const expenseData = {
+            // 🔍 DI SINI KUNCINYA: Jangan dibungkus objek bersarang lagi!
+            // Kirim objek datar langsung agar dibaca sempurna oleh Sequelize .create()
+            const flatExpenseData = {
                 expense_number: `EXP/${Date.now()}`,
                 type,
                 total_expense,
@@ -105,7 +103,9 @@ const expenseController = {
                 expense_date: expense_date ? new Date(expense_date) : new Date()
             };
 
-            const result = await expenseQueries.createExpense(expenseData, processedItems);
+            // Lempar objek datar ke query layer
+            const result = await expenseQueries.createExpense(flatExpenseData, processedItems);
+
             return res.success(result, 'Transaksi pengeluaran berhasil dicatat', 201);
 
         } catch (error) {

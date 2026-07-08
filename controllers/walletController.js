@@ -71,7 +71,31 @@ const walletController = {
         } catch (error) {
             return res.error(error.message, 500);
         }
-    }
+    },
+
+    createNewTransactionWallet: async (req, res) => {
+        try {
+            const resultCreate = await walletQueries.createHistoryTransaction(req.body);
+            if(resultCreate){
+                return res.success(resultCreate, 'Transaction baru berhasil ditambahkan', 201);
+            } else {
+                return res.error('test');
+            }
+        } catch (error) {
+            return res.error(error.message, 500);
+        }
+    },
+
+    detailTransactionWallet: async (req, res) => {
+        try {
+            console.log('masuk detail')
+            const { id } = req.params
+            const resultTransaction = await walletQueries.findAllByWalletId(id);
+            return res.success(resultTransaction, '');
+        } catch (error) {
+            return res.error(error.message, 500);
+        }
+    },
 };
 
-module.exports = walletController;
+module.exports = walletController; 

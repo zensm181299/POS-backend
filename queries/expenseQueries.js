@@ -1,4 +1,5 @@
 const { ExpenseTransaction, ExpenseTransactionDetail, Wallet, Product, sequelize } = require('../models');
+const { v4: uuidv4 } = require('uuid');
 
 const expenseQueries = {
     // 1. Ambil List Expense dengan Pagination & Filter (BARU)
@@ -54,15 +55,23 @@ const expenseQueries = {
             const wallet = await Wallet.findByPk(expenseData.wallet_id, { transaction: t });
             if (!wallet) throw new Error('Wallet tidak ditemukan.');
             
-            if (wallet.saldo < expenseData.total_expense) {
+            if (wallet.balance < expenseData.total_expense) {
                 throw new Error(`Saldo pada wallet '${wallet.name}' tidak mencukupi untuk pengeluaran ini.`);
             }
+
             
-            wallet.saldo -= parseInt(expenseData.total_expense);
+            console.log({walletBefore:wallet})
+            wallet.balance -= parseInt(expenseData.total_expense);
+            console.log({walletAfter:wallet})
             await wallet.save({ transaction: t });
 
             // 2. Simpan Data Transaksi Utama Pengeluaran
-            const newExpense = await ExpenseTransaction.create(expenseData, { transaction: t });
+            const newExpenseId = uuidv4();
+            const finalExpenseData = {
+                id: newExpenseId, // 🔍 SUNTIKKAN ID STRING KE DATA INDUK
+                ...expenseData
+            };
+            const newExpense = await ExpenseTransaction.create(finalExpenseData, { transaction: t });
 
             // 3. Skenario Khusus RESTOCK: Tambah Stok Produk
             if (expenseData.type === 'RESTOCK' && detailItems.length > 0) {

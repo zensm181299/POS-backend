@@ -2,20 +2,27 @@
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface, Sequelize) {
-    await queryInterface.createTable('wallets', {
+    await queryInterface.createTable('balance_transaction_history', {
       id: {
         allowNull: false,
         primaryKey: true,
         type: Sequelize.UUID,
-        defaultValue: Sequelize.UUIDV4
+        defaultValue: Sequelize.UUIDV4 // 🔍 Menjamin UUID terbentuk di level database jika didukung
       },
-      name: {
+      wallet_id: {
+        type: Sequelize.UUID, // 🔍 Wajib UUID murni
+        allowNull: false,
+      },
+      type: {
         type: Sequelize.STRING
       },
-      balance: {
+      amount: {
         type: Sequelize.INTEGER
       },
-      description: {
+      date: {
+        type: Sequelize.DATE
+      },
+      notes: {
         type: Sequelize.STRING
       },
       created_at: {
@@ -29,6 +36,6 @@ module.exports = {
     });
   },
   async down(queryInterface, Sequelize) {
-    await queryInterface.dropTable('Wallets');
+    await queryInterface.dropTable('balance_transaction_history');
   }
 };

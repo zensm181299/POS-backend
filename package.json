@@ -19,7 +19,8 @@
     "mysql2": "^3.22.5",
     "pg": "^8.x.x",
     "pg-hstore": "^2.x.x",
-    "sequelize": "^6.x.x"
+    "sequelize": "^6.x.x",
+    "uuid": "^14.0.1"
   },
   "devDependencies": {
     "nodemon": "^3.x.x",

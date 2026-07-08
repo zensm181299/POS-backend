@@ -25,9 +25,6 @@ const transactionQueries = {
     create: async (transactionData, detailItems) => {
         const t = await sequelize.transaction();
         try {
-            // =========================================================
-            // TRIGGER 1: MANAJEMEN STOK PRODUK
-            // =========================================================
             for (const item of detailItems) {
                 const product = await Product.findByPk(item.product_id, { transaction: t });
                 if (!product) throw new Error(`Produk dengan ID ${item.product_id} tidak ditemukan.`);
@@ -41,10 +38,6 @@ const transactionQueries = {
                 }
             }
 
-            // =========================================================
-            // TRIGGER 2: UPDATE SALDO WALLET (BARU & OPSIONAL)
-            // =========================================================
-            // Jika kasir memilih wallet_id saat checkout transaksi
             if (transactionData.wallet_id) {
                 const wallet = await Wallet.findByPk(transactionData.wallet_id, { transaction: t });
                 if (!wallet) {
@@ -52,11 +45,10 @@ const transactionQueries = {
                 }
 
                 // Tambahkan saldo wallet dengan total omset (pemasukan kotor) dari transaksi ini
-                wallet.saldo += parseInt(transactionData.total_omset);
+                wallet.balance += parseInt(transactionData.total_omset);
                 await wallet.save({ transaction: t });
             }
 
-            // Simpan induk transaksi (Sekarang membawa wallet_id jika diisi)
             const newTransaction = await Transaction.create(transactionData, { transaction: t });
 
             // Simpan bulk item detail transaksi
